@@ -207,11 +207,30 @@ WHERE `order`.amount = (
 	SELECT MAX(`order`.amount) FROM `order`
 );
 -- Tìm người dùng không hoạt động trong hệ thống
-SELECT `user`.full_name
+SELECT `user`.full_name AS 'DANH SÁCH KHÁCH HÀNG KHÔNG HOẠT ĐỘNG'
 FROM `user`
-RIGHT JOIN rate_res ON `user`.user_id = rate_res.user_id
-RIGHT JOIN like_res ON `user`.user_id = like_res.user_id
-RIGHT JOIN `order` ON `user`.user_id = `order`.user_id
+LEFT JOIN rate_res ON `user`.user_id = rate_res.user_id
+LEFT JOIN like_res ON `user`.user_id = like_res.user_id
+LEFT JOIN `order` ON `user`.user_id = `order`.user_id
 WHERE rate_res.user_id IS NULL
   AND like_res.user_id IS NULL
-  AND `order`.user_id IS NULL;
+  AND `order`.user_id IS NULL
+UNION
+SELECT 'TẤT CẢ KHÁCH HÀNG ĐÃ HOẠT ĐỘNG'
+WHERE NOT EXISTS (
+SELECT 1
+FROM `user`
+LEFT JOIN rate_res ON `user`.user_id = rate_res.user_id
+LEFT JOIN like_res ON `user`.user_id = like_res.user_id
+LEFT JOIN `order` ON `user`.user_id = `order`.user_id
+WHERE rate_res.user_id IS NULL
+  AND like_res.user_id IS NULL
+  AND `order`.user_id IS NULL
+)
+  
+
+  
+
+
+
+
